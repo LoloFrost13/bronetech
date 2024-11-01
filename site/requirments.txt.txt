@@ -1,9 +1,0 @@
-express
-sqlite3
-multer
-cors
-body-parser
-axios
-morgan
-cookie-parser
-dotenv
