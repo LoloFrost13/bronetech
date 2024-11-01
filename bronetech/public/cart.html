@@ -1,0 +1,591 @@
+<!DOCTYPE html> 
+<html lang="ru"> 
+    <head> 
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+        <meta charset="UTF-8"> 
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+        <meta name="description" content="Качественная экипировка нового поколения"> 
+        <meta name="keywords" content="бронежилеты, снаряжение, экипировка, разгрузка, подсумки, пояса"> 
+        <title>Магазин снаряжения</title>         
+        <link rel="stylesheet" href="styles.css"> 
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> 
+    </head>     
+    <body>       
+        <header> 
+            <div class="header__container"> 
+               
+                <div class="menu-icon"> <i class="fas fa-bars"></i> 
+                </div>                 
+                <a href="index.html" class="header__logo">  <img src="/images/logo.png" alt="БронеТек">  </a> 
+
+<div id="cart-icon" class="header__icons">
+    <i class="fas fa-shopping-cart"></i>
+</div>
+</header>           
+          
+            <nav class="menu"> 
+                <ul> 
+                    <li>
+                        <a href="about.html">О компании</a>
+                    </li>                     
+                    <li>
+                        <a href="contacts.html">Контакты</a>
+                    </li>                     
+                    <li>
+                        <a href="#" id="catalog-link">Каталог</a>
+                    </li>                     
+                </ul>                 
+            </nav>             
+
+
+<div class="content-wrapper"> 
+        <div class="background-pattern"></div>         
+<main class="cart-main">
+             <h2>Корзина товаров</h2>    
+    <div class="cart-items-container">
+
+        <div id="cart-items">
+
+        </div>
+
+        <div class="order-summary">
+            <h2>Итоги заказа</h2>
+            <div class="summary-details">
+                <div class="summary-row">
+                    <span>Общая стоимость:</span>
+                    <span id="total-price">0 ₽</span>
+                </div>
+                <div class="summary-row promo-applied" style="display: none;">
+                    <span>Использован промокод:</span>
+                    <span id="promo-code-applied">0 ₽</span>
+                </div>
+                <div class="summary-row">
+                    <span>Скидка:</span>
+                    <span id="total-discount">0 ₽</span>
+                </div>
+                <div class="summary-row final">
+                    <span>Итого:</span>
+                    <span id="final-price">0 ₽</span>
+                </div>
+            </div>
+            <div class="promo-code-container">
+                <button type="button" class="btn-show-promo">Есть промокод?</button>
+                <div class="promo-code-input" style="display: none; margin-top: 10px;">
+                    <input type="text" id="promo-code" name="promo-code" placeholder="Введите промокод">
+                    <button type="button" class="btn-apply-promo">Применить промокод</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="order-form-container">
+        <h2>Оформление заказа</h2>
+        <form id="order-form">
+            <div class="form-group">
+                <label for="phone-number">Ваш номер телефона <span class="required">*</span></label>
+                <input type="tel" id="phone-number" name="phone-number" required placeholder="Введите ваш номер телефона">
+            </div>
+            <div class="form-group">
+                <label for="contact-info">Ваш контакт в соцсетях (необязательно)</label>
+                <input type="text" id="contact-info" name="contact-info" placeholder="Введите ваш Telegram, ВКонтакте и т.д.">
+            </div>
+            <div class="form-group">
+                <label for="order-comment">Комментарий к заказу (необязательно)</label>
+                <textarea id="order-comment" name="order-comment" placeholder="Ваш комментарий..."></textarea>
+            </div>
+            <button id="checkout-btn" class="btn-checkout" type="button">Оформить заказ</button>
+            <div class="btn-clear-cart-wrapper">
+                <button class="btn-clear-cart">Очистить корзину</button>
+            </div>
+            
+        </form>
+    </div>
+</div>
+</main>
+
+
+<div id="success-popup" class="popup">
+    <div class="popup-content">
+        <h2>Ваш заказ успешно оформлен!</h2>
+        <p>Спасибо за покупку!<br> Наш менеджер свяжется с вами в ближайшее время для подтверждения деталей.<br> Желаем Вам приятных покупок!</p>
+        
+        <button id="close-popup" class="popup-close-btn">Закрыть</button>
+    </div>
+</div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let cart = [];
+
+    const successPopup = document.getElementById('success-popup');
+    if (localStorage.getItem('orderSuccess') === 'true') {
+        console.log('Показ уведомления: orderSuccess найден в localStorage.');
+        successPopup.classList.add('active');
+        localStorage.removeItem('orderSuccess');
+        console.log('orderSuccess удалён из localStorage.');
+    }
+
+
+    document.getElementById('close-popup').addEventListener('click', function() {
+        successPopup.classList.add('inactive');
+        successPopup.classList.remove('active');
+        clearCart();
+    });
+
+
+    loadCart();
+
+
+function addToCart(productId, quantity) {
+    fetch('/api/cart', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({ productId, quantity })
+    })
+    .then(response => {
+        if (response.ok) {
+            alert('Товар успешно добавлен в корзину!');
+        } else {
+            throw new Error('Ошибка добавления товара в корзину');
+        }
+    })
+    .catch(error => console.error('Ошибка добавления товара в корзину:', error));
+}
+
+function loadCart() {
+        fetch('/api/cart', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+        })
+        .then(response => response.json())
+        .then(cartItems => {
+            cart = cartItems;
+            renderCart();
+        })
+        .catch(error => console.error('Ошибка загрузки корзины:', error));
+    }
+
+
+
+    function renderCart() {
+    const cartItemsContainer = document.getElementById('cart-items');
+    cartItemsContainer.innerHTML = '';
+
+    if (cart.length === 0) {
+        cartItemsContainer.innerHTML = '<p>Корзина пуста</p>';
+        updateCartSummary(0, 0);
+        console.log("Корзина пуста");
+        return;
+    }
+
+    let totalPrice = 0;
+    let totalDiscount = 0;
+
+    cart.forEach(item => {
+        const basePrice = item.price;
+        const discount = item.discount || 0;
+        const discountPrice = basePrice - discount;
+
+        const cartItem = document.createElement('div');
+        cartItem.classList.add('cart-item');
+        cartItem.innerHTML = `
+            <div class="cart-item-info">
+                <img src="${item.main_image}" alt="${item.name}" class="cart-item-image">
+                <div class="cart-item-details">
+                    <p class="cart-item-category">${item.category}</p>
+                    <h3 class="cart-item-name">${item.name}</h3>
+                    <p class="cart-item-price">
+                        ${discount > 0 ? `<span style="text-decoration: line-through;">${basePrice.toFixed(2)} ₽</span> ${discountPrice.toFixed(2)} ₽` : `${basePrice.toFixed(2)} ₽`}
+                    </p>
+                    <p class="cart-item-quantity">Количество: 
+                        <button class="quantity-decrease" data-id="${item.id}">-</button>
+                        <input type="number" value="${item.quantity}" min="1" data-id="${item.id}" class="cart-quantity-input">
+                        <button class="quantity-increase" data-id="${item.id}">+</button>
+                    </p>
+                </div>
+            </div>
+            <i class="fas fa-times cart-item-remove" data-id="${item.id}"></i>
+        `;
+        cartItemsContainer.appendChild(cartItem);
+
+        totalPrice += basePrice * item.quantity;
+        totalDiscount += discount * item.quantity;
+    });
+
+    updateCartSummary(totalPrice, totalDiscount);
+    attachEventListeners(); 
+    console.log("Корзина обновлена после удаления товара", cart);
+}
+
+function quantityInputHandler(event) {
+    const input = event.target;
+    const newQuantity = parseInt(input.value);
+    const itemId = input.getAttribute('data-id');
+
+    console.log(`Попытка изменения количества для товара ID: ${itemId} на новое значение: ${newQuantity}`);
+
+    if (isNaN(newQuantity) || newQuantity < 1) {
+        alert('Пожалуйста, введите корректное количество.');
+        input.value = 1;
+        console.warn(`Некорректное количество для товара ID: ${itemId}. Установлено значение по умолчанию: 1`);
+        return;
+    }
+
+    const item = cart.find(i => i.id == itemId);
+    if (item) {
+        const availableQuantity = item.available_quantity || item.quantity;
+
+        if (newQuantity > availableQuantity) {
+            alert(`Доступно только ${availableQuantity} шт.`);
+            input.value = availableQuantity;
+            console.warn(`Попытка установить количество выше доступного для товара ID: ${itemId}. Установлено значение: ${availableQuantity}`);
+            return;
+        }
+
+        item.quantity = newQuantity;
+        console.log(`Обновление локальной корзины: Товар ID ${itemId} теперь имеет количество ${newQuantity}`);
+
+
+        fetch(`/api/cart`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ productId: itemId, quantity: newQuantity })
+        })
+        .then(response => {
+            console.log(`Получен ответ от сервера: статус ${response.status}`);
+            return response.json().then(data => {
+                console.log('Данные ответа от сервера:', data);
+                if (response.ok && data.success) {
+                    console.log(`Количество товара ID ${itemId} успешно обновлено на сервере.`);
+                    renderCart();
+                } else {
+                    throw new Error(data.error || 'Ошибка обновления количества товара');
+                }
+            });
+        })
+        .catch(error => {
+            console.error(`Ошибка обновления количества товара ID ${itemId}:`, error);
+            alert('Не удалось обновить количество товара. Пожалуйста, попробуйте позже.');
+
+            input.value = item.quantity;
+        });
+    } else {
+        console.error(`Товар с ID ${itemId} не найден в корзине.`);
+        alert('Произошла ошибка. Попробуйте обновить страницу.');
+    }
+}
+
+
+
+
+
+
+    function updateCartSummary(totalPrice, totalDiscount) {
+        const promoDiscount = parseFloat(document.getElementById('promo-code-applied')?.textContent.replace(/[^\d.-]/g, '')) || 0;
+        document.getElementById('total-price').textContent = `${totalPrice.toFixed(2)} ₽`;
+        document.getElementById('total-discount').textContent = ` ${totalDiscount.toFixed(2)} ₽`;
+        document.getElementById('final-price').textContent = `${(totalPrice - totalDiscount - promoDiscount).toFixed(2)} ₽`;
+    }
+
+
+
+function attachEventListeners() {
+    document.querySelectorAll('.quantity-increase').forEach(button => {
+        button.removeEventListener('click', increaseQuantityHandler);
+        button.addEventListener('click', increaseQuantityHandler);
+    });
+
+    document.querySelectorAll('.quantity-decrease').forEach(button => {
+        button.removeEventListener('click', decreaseQuantityHandler);
+        button.addEventListener('click', decreaseQuantityHandler);
+    });
+
+    document.querySelectorAll('.cart-item-remove').forEach(button => {
+        button.removeEventListener('click', removeItemHandler);
+        button.addEventListener('click', removeItemHandler);
+    });
+
+
+    document.querySelectorAll('.cart-quantity-input').forEach(input => {
+        input.removeEventListener('change', quantityInputHandler);
+        input.addEventListener('change', quantityInputHandler);
+        
+        input.removeEventListener('input', quantityInputHandler);
+        input.addEventListener('input', quantityInputHandler);
+    });
+}
+
+
+
+
+function increaseQuantityHandler(event) {
+    const cartItemId = event.currentTarget.getAttribute('data-id');
+    updateItemQuantity(cartItemId, 1);
+}
+
+function decreaseQuantityHandler(event) {
+    const cartItemId = event.currentTarget.getAttribute('data-id');
+    updateItemQuantity(cartItemId, -1);
+}
+
+function removeItemHandler(event) {
+    const cartItemId = event.currentTarget.getAttribute('data-id');
+    removeItem(cartItemId);
+}
+
+
+
+function updateItemQuantity(itemId, change) {
+    const item = cart.find(i => i.id == itemId);
+    if (item) {
+        const availableQuantity = item.available_quantity || item.quantity;
+
+
+        if (change < 0 && item.quantity <= 1) {
+            alert('Минимальное количество товара — 1.');
+            return;
+        }
+
+
+        if (change > 0 && item.quantity >= availableQuantity) {
+            alert('Товар закончился. Доступно только ' + availableQuantity + ' шт.');
+            return;
+        }
+
+        item.quantity += change;
+
+
+        renderCart();
+
+
+        fetch(`/api/cart/${itemId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ quantity: item.quantity })
+        })
+        .catch(error => console.error('Ошибка обновления товара в корзине:', error));
+    }
+}
+
+
+
+
+function removeItem(cartItemId) {
+    fetch(`/api/cart/deletetovar`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ productId: cartItemId })
+    })
+    .then(response => response.json())
+    .then(() => {
+
+        cart = cart.filter(item => item.id !== cartItemId).map(item => ({ ...item }));
+        console.log(`Товар с ID ${cartItemId} удалён. Текущая корзина после фильтрации:`, cart);
+
+        loadCart();
+        renderCart();
+    })
+    .catch(error => console.error('Ошибка удаления товара:', error));
+}
+
+
+
+
+function clearCart() {
+    fetch(`/api/cart/clear`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({})
+    })
+    .then(response => response.json())
+    .then(() => {
+        localStorage.removeItem('orderSuccess');
+        cart = [];
+        renderCart();
+        console.log('Корзина успешно очищена');
+    })
+    .catch(error => console.error('Ошибка очистки корзины:', error));
+}
+
+
+document.getElementById('checkout-btn').addEventListener('click', function(event) {
+    event.preventDefault();
+
+    const phoneNumber = document.getElementById('phone-number').value.trim();
+
+    if (phoneNumber === '') {
+        alert('Пожалуйста, введите ваш номер телефона.');
+        document.getElementById('phone-number').focus();
+        return; 
+    }
+
+
+    const contactInfo = document.getElementById('contact-info').value.trim();
+    const comment = document.getElementById('order-comment').value.trim();
+
+
+    const cartItems = cart.map(item => ({
+        id: item.id,
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price
+    }));
+
+    const finalPrice = parseFloat(document.getElementById('final-price').textContent.replace(/[^\d.-]/g, '')) || 0;
+
+    fetch('/api/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneNumber, contactInfo, comment, cartItems, finalPrice })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+
+            localStorage.setItem('orderSuccess', 'true');
+
+
+            window.location.reload();
+        } else {
+            console.error('Ошибка оформления заказа:', data.message);
+            alert('Ошибка оформления заказа: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Ошибка при отправке заказа:', error);
+        alert('Ошибка при отправке заказа. Пожалуйста, попробуйте позже.');
+    });
+});
+
+
+
+
+
+
+
+
+
+
+document.querySelector('.btn-show-promo').addEventListener('click', function() {
+    document.querySelector('.promo-code-input').style.display = 'block';
+});
+
+
+document.querySelector('.btn-apply-promo').addEventListener('click', function() {
+    const promoCode = document.getElementById('promo-code').value;
+
+    fetch(`/api/promocodes/${promoCode}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.valid) {
+                const promoDiscount = data.discount;
+                
+
+                document.getElementById('promo-code-applied').textContent = ` ${promoDiscount.toFixed(2)} ₽`;
+
+                document.querySelector('.promo-applied').style.display = 'flex'; 
+                
+
+                const totalPrice = parseFloat(document.getElementById('total-price').textContent.replace(/[^\d.-]/g, '')) || 0;
+                const totalDiscount = parseFloat(document.getElementById('total-discount').textContent.replace(/[^\d.-]/g, '')) || 0;
+                
+
+                document.getElementById('final-price').textContent = `${(totalPrice - totalDiscount - promoDiscount).toFixed(2)} ₽`;
+            } else {
+                alert('Неверный промокод');
+            }
+        })
+        .catch(error => console.error('Ошибка при проверке промокода:', error));
+});
+
+
+
+
+document.getElementById('clear-cart-btn').addEventListener('click', function(event) {
+    event.preventDefault();
+
+    clearCart();
+});
+});
+document.addEventListener("DOMContentLoaded", () => {
+    const backgroundPattern = document.querySelector('.background-pattern');
+    const icons = ['images/1.svg', 'images/2.svg', 'images/3.svg', 'images/4.svg', 'images/logo.svg'];
+    const totalIcons = 200;
+
+    for (let i = 0; i < totalIcons; i++) {
+        const icon = document.createElement('img');
+        icon.src = icons[Math.floor(Math.random() * icons.length)];
+        icon.classList.add('background-icon');
+        backgroundPattern.appendChild(icon);
+    }
+});
+const menuIcon = document.querySelector('.menu-icon');
+const menu = document.querySelector('.menu');
+
+
+menuIcon.addEventListener('mouseenter', function() {
+    menu.classList.add('active');
+});
+menuIcon.addEventListener('mouseleave', function() {
+    menu.classList.remove('active');
+});
+menu.addEventListener('mouseenter', function() {
+    menu.classList.add('active');
+});
+menu.addEventListener('mouseleave', function() {
+    menu.classList.remove('active');
+});
+
+
+menuIcon.addEventListener('click', function() {
+    menu.classList.toggle('active');
+});
+
+
+window.addEventListener('scroll', function() {
+    menu.classList.remove('active');
+});
+
+
+document.addEventListener('click', function(event) {
+
+    if (!menu.contains(event.target) && !menuIcon.contains(event.target)) {
+        menu.classList.remove('active');
+    }
+});
+</script>
+
+<footer class="footer"> 
+    <div class="footer-content"> 
+             
+        <div class="footer-logos"> 
+            <img src="images/logos.svg"> 
+        </div>                 
+        <div class="footer-contact" > 
+            <p class="contact-info"><strong>Адрес:</strong><br>Санкт-Петербург, Заозёрная улица, 8к2,<br> офис 107, парадная 3
+</p> 
+            <p class="contact-info">  <strong>Телефоны:</strong><br>  <span class="phone-number">+7 (994) 436-56-29</span>  <span class="phone-number">+7 (900) 304-45-75</span>  </p> 
+            <p class="contact-info">  <strong>Email:</strong><br>  <a href="mailto:agrarmor@bk.ru">agrarmor@bk.ru</a>  </p> 
+        </div>                 
+            
+        <div class="footer-social"> <a href="https://vk.com/bronetech" target="_blank" aria-label="ВКонтакте"><i class="fab fa-vk"></i></a> <a href="https://t.me/bronetech" target="_blank" aria-label="Телеграм"><i class="fab fa-telegram-plane"></i></a> 
+        </div>                 
+          
+        <p class="footer-tagline">Твоя защита - наш приоритет.</p> 
+    </div>             
+       
+    <div class="footer-copyright"> 
+    </p>  © 2023 БронеТек. Все права защищены.</p> 
+    </div>             
+</footer>         
+</body>
+</html>

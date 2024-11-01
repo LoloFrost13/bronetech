@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель</title>
+</head>
+<body>
+
+    <!-- Авторизация по паролю -->
+    <div id="auth-container">
+        <h2>Авторизация</h2>
+        <input type="password" id="password" placeholder="Введите пароль">
+        <button id="login-btn">Войти</button>
+        <p id="auth-error" style="color: red; display: none;">Неправильный пароль</p>
+    </div>
+
+    <!-- Панель админа, скрытая до авторизации -->
+    <div id="admin-panel" style="display: none;">
+        <button id="logout-btn">Выйти</button>
+
+        <form id="productForm" enctype="multipart/form-data">
+            <input type="hidden" id="productId">
+        
+            <label for="name">Название товара:</label>
+            <input type="text" id="name" required>
+        
+            <label for="description">Описание:</label>
+            <textarea id="description" required></textarea>
+            <label for="isNew">Новинка:</label>
+<input type="checkbox" id="isNew" name="isNew">
+
+<label for="isBestseller">Хит продаж:</label>
+<input type="checkbox" id="isBestseller" name="isBestseller">
+
+        
+            <label for="price">Цена:</label>
+            <input type="number" id="price" step="0.01" required>
+        
+            <label for="quantity">Количество:</label>
+            <input type="number" id="quantity" value="1" required min="0"> <!-- Значение по умолчанию -->
+        
+            <label for="discount">Скидка (в рублях):</label>
+            <input type="number" id="discount" step="0.01" placeholder="0 (если нет скидки)">
+            
+            <label for="category">Категория:</label>
+            <select id="category" required>
+                <option value="zhilety">Жилеты</option>
+                <option value="obuv">Обувь</option>
+                <option value="plity">Бронеплиты</option>
+                <option value="medicina">Тактическая медицина</option>
+                <option value="shlemy">Баллистические шлемы</option>
+                <option value="podsumki">Подсумки</option>
+                <option value="naushniki">Активные наушники</option>
+                <option value="ryukzaki">Рюкзаки и сумки</option>
+                <option value="odezhda">Одежда</option>
+                <option value="poyasa">Тактические пояса</option>
+                <option value="ballisticheskaya-zashchita">Баллистическая защита</option>
+                <option value="moduli-zashchity">Дополнительные модули защиты</option>
+            </select>
+            
+        
+            <label for="mainImage">Главное изображение:</label>
+            <input type="file" id="mainImage">
+        
+            <label for="galleryImages">Дополнительные изображения:</label>
+            <input type="file" id="galleryImages" multiple>
+        
+            <button type="submit">Добавить/Редактировать товар</button>
+        </form>
+
+<!-- Модальное окно для редактирования товара -->
+<div id="editModal" style="display: none;">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Редактирование товара</h2>
+        <form id="editProductForm" enctype="multipart/form-data">
+            <input type="hidden" id="editProductId">
+            <input type="hidden" id="deleteMainImage" value="false"> <!-- Для удаления главного изображения -->
+            <input type="hidden" id="deleteGalleryImages" value=""> <!-- Для удаления изображений галереи -->
+        
+            <label for="editName">Название товара:</label>
+            <input type="text" id="editName" required>
+
+            <label for="editDescription">Описание:</label>
+            <textarea id="editDescription" required></textarea>
+
+            <label for="editPrice">Цена:</label>
+            <input type="number" id="editPrice" step="0.01" required>
+
+            <label for="editQuantity">Количество:</label>
+            <input type="number" id="editQuantity" required min="0">
+            <label for="isNew">Новинка:</label>
+            <input type="checkbox" id="editisNew" name="isNew">
+
+            <label for="isBestseller">Хит продаж:</label>
+            <input type="checkbox" id="editisBestseller" name="isBestseller">
+
+            <label for="editDiscount">Скидка (в рублях):</label>
+            <input type="number" id="editDiscount" step="0.01" placeholder="0 (если нет скидки)">
+
+            <label for="editCategory">Категория:</label>
+            <select id="editCategory" required>
+                <option value="zhilety">Жилеты</option>
+                <option value="obuv">Обувь</option>
+                <option value="plity">Бронеплиты</option>
+                <option value="medicina">Тактическая медицина</option>
+                <option value="shlemy">Баллистические шлемы</option>
+                <option value="podsumki">Подсумки</option>
+                <option value="naushniki">Активные наушники</option>
+                <option value="ryukzaki">Рюкзаки и сумки</option>
+                <option value="odezhda">Одежда</option>
+                <option value="poyasa">Тактические пояса</option>
+                <option value="ballisticheskaya-zashchita">Баллистическая защита</option>
+                <option value="moduli-zashchity">Дополнительные модули защиты</option>
+            </select>
+            
+
+            <label for="editMainImage">Главное изображение:</label>
+            <input type="file" id="editMainImage">
+            <img id="mainImagePreview" style="width: 100px; display: block; margin-top: 10px;">
+
+            <label for="editGalleryImages">Дополнительные изображения:</label>
+            <input type="file" id="editGalleryImages" multiple>
+            <div id="galleryImagesPreview" style="display: flex; flex-wrap: wrap; margin-top: 10px;"></div>
+
+            <button type="submit">Сохранить изменения</button>
+        </form>
+    </div>
+</div>
+
+        <!-- Список товаров -->
+        <div id="product-list-container">
+            <h2>Список товаров</h2>
+            <div id="product-list"></div>
+        </div>
+
+        <!-- Управление промокодами -->
+        <div id="promoForm-container">
+            <h2>Управление промокодами</h2>
+            <form id="promoForm">
+                <label for="promoCode">Промокод:</label>
+                <input type="text" id="promoCode" required>
+
+                <label for="discountAmount">Скидка (в рублях):</label>
+                <input type="number" id="discountAmount" step="0.01" required>
+
+                <button type="submit">Добавить промокод</button>
+            </form>
+
+            <h3>Список промокодов</h3>
+            <div id="promo-list"></div>
+        </div>
+    </div>
+    <script>
+        // Проверка, авторизован ли пользователь
+if (localStorage.getItem('isAuthenticated') === 'true') {
+    document.getElementById('auth-container').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'flex';
+    displayProducts();
+    displayPromoCodes();
+}
+
+        const encryptedPassword = btoa("1");
+        document.getElementById('login-btn').addEventListener('click', function() {
+    const enteredPassword = document.getElementById('password').value;
+    const encryptedEnteredPassword = btoa(enteredPassword);
+
+    if (encryptedEnteredPassword === encryptedPassword) {
+        localStorage.setItem('isAuthenticated', 'true'); // Сохраняем статус авторизации
+        document.getElementById('auth-container').style.display = 'none';
+        document.getElementById('admin-panel').style.display = 'flex';
+        displayProducts();
+        displayPromoCodes();
+    } else {
+        document.getElementById('auth-error').style.display = 'block';
+    }
+});
+// Закрытие модального окна
+document.querySelector('.close').onclick = function() {
+    document.getElementById('editModal').style.display = 'none';
+}
+
+// Закрытие модального окна при клике вне его области
+window.onclick = function(event) {
+    const modal = document.getElementById('editModal');
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+}
+
+
+        // Сохранение товаров через API
+        document.getElementById('productForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Отключаем перезагрузку страницы
+
+    const name = document.getElementById('name').value;
+    const description = document.getElementById('description').value;
+    const price = document.getElementById('price').value;
+    const quantity = document.getElementById('quantity').value;
+    const discount = document.getElementById('discount').value || 0;
+    const category = document.getElementById('category').value;
+    const isNew = document.getElementById('isNew').checked ? 1 : 0;;
+    const isBestseller = document.getElementById('isBestseller').checked ? 1 : 0;;
+
+    // Собираем данные продукта
+    const product = {
+    id: document.getElementById('productId').value || null,
+    name,
+    description,
+    price: parseFloat(price),  // Убираем toFixed при отправке
+    quantity: parseInt(quantity),
+    discount: parseFloat(discount) || 0,
+    category,
+    isBestseller,
+    isNew
+};
+
+
+    // Создаем объект FormData для отправки данных с изображениями
+    const formData = new FormData();
+    formData.append('name', product.name);
+    formData.append('description', product.description);
+    formData.append('price', product.price);
+    formData.append('quantity', product.quantity);
+    formData.append('discount', product.discount);
+    formData.append('category', product.category);
+    formData.append('isBestseller', product.isBestseller);
+    formData.append('isNew', product.isNew);
+
+    // Добавляем главное изображение
+    const mainImageFile = document.getElementById('mainImage').files[0];
+    if (mainImageFile) {
+        formData.append('mainImage', mainImageFile);
+    }
+
+    // Добавляем дополнительные изображения
+    const galleryImageFiles = document.getElementById('galleryImages').files;
+    for (let i = 0; i < galleryImageFiles.length; i++) {
+        formData.append('galleryImages', galleryImageFiles[i]);
+    }
+
+    // Если есть id продукта, используем метод PUT, иначе POST
+    const method = product.id ? 'PUT' : 'POST';
+    const url = product.id ? `/api/products/${product.id}` : '/api/products';
+
+    // Отправляем данные на сервер
+    fetch(url, {
+        method: method,
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(product.id ? 'Товар успешно обновлен!' : 'Товар успешно добавлен!');
+        displayProducts(); // Перезагружаем список товаров
+    })
+    .catch(error => console.error('Ошибка:', error));
+});
+
+
+
+// Отображение списка товаров с привязкой к кнопке редактирования
+function displayProducts() {
+    const productList = document.getElementById('product-list');
+    fetch('/api/products')
+        .then(response => response.json())
+        .then(products => {
+            productList.innerHTML = ''; // Очищаем список
+            products.forEach((product) => {
+                const productDiv = document.createElement('div');
+                productDiv.classList.add('product-item');
+                productDiv.innerHTML = `
+                    <img src="${product.main_image}" alt="${product.name}">
+                    <div class="product-details">
+                        <p><strong>${product.name}</strong> (${product.quantity} шт.) - ${parseFloat(product.price).toFixed(2)} ₽</p>
+                        ${product.discount ? `<p>Скидка: ${parseFloat(product.discount).toFixed(2)} ₽</p>` : ''}
+                    </div>
+                    <button class="edit-btn" data-id="${product.id}">Редактировать</button>
+                    <button class="delete-btn" data-id="${product.id}">Удалить</button>
+                `;
+                productList.appendChild(productDiv);
+            });
+
+            // Привязываем обработчик событий кнопкам после создания элементов
+            document.querySelectorAll('.edit-btn').forEach(button => {
+                button.addEventListener('click', function(event) {
+                    const productId = this.getAttribute('data-id');
+                    event.preventDefault(); // Отмена перезагрузки страницы
+                    editProduct(productId); // Вызов функции редактирования
+                });
+            });
+        })
+        .catch(error => console.error('Ошибка загрузки товаров:', error));
+}
+
+
+function editProduct(id) {
+    fetch(`/api/products/${id}`)
+        .then(response => response.json())
+        .then(product => {
+            // Открываем модальное окно редактирования товара
+            document.getElementById('editModal').style.display = 'block';
+
+            // Заполняем форму данными товара
+            document.getElementById('editProductId').value = product.id;
+            document.getElementById('editName').value = product.name;
+            document.getElementById('editDescription').value = product.description;
+            document.getElementById('editPrice').value = product.price;
+            document.getElementById('editQuantity').value = product.quantity;
+            document.getElementById('editDiscount').value = product.discount || 0;
+            document.getElementById('editCategory').value = product.category;
+            document.getElementById('editisNew').checked = product.is_new === 1;
+            document.getElementById('editisBestseller').checked = product.is_bestseller === 1;
+
+
+            // Устанавливаем предварительный просмотр главного изображения
+            const mainImagePreview = document.getElementById('mainImagePreview');
+            if (product.main_image) {
+                mainImagePreview.src = product.main_image;
+                mainImagePreview.style.display = 'block';
+
+                // Кнопка для удаления главного изображения
+                const deleteMainImageBtn = document.createElement('button');
+                deleteMainImageBtn.textContent = 'Удалить главное изображение';
+                deleteMainImageBtn.addEventListener('click', function() {
+                    mainImagePreview.src = ''; // Сбрасываем изображение
+                    mainImagePreview.style.display = 'none';
+                    document.getElementById('deleteMainImage').value = 'true'; // Помечаем для удаления
+                });
+                mainImagePreview.parentNode.appendChild(deleteMainImageBtn);
+            } else {
+                mainImagePreview.src = '';
+                mainImagePreview.style.display = 'none';
+            }
+
+            // Устанавливаем предварительный просмотр галереи изображений
+            const galleryImagesPreview = document.getElementById('galleryImagesPreview');
+            galleryImagesPreview.innerHTML = ''; // Очищаем текущие изображения
+            if (product.gallery_images) {
+                product.gallery_images.split(',').forEach((image, index) => {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = image;
+                    imgElement.style.width = '100px';
+                    imgElement.style.marginRight = '10px';
+                    galleryImagesPreview.appendChild(imgElement);
+
+                    // Кнопка для удаления изображения из галереи
+                    const deleteGalleryImageBtn = document.createElement('button');
+                    deleteGalleryImageBtn.textContent = 'Удалить';
+                    deleteGalleryImageBtn.addEventListener('click', function() {
+                        imgElement.remove(); // Удаляем изображение с интерфейса
+                        deleteGalleryImageBtn.remove();
+                        const deleteGalleryImages = document.getElementById('deleteGalleryImages');
+                        const updatedGallery = deleteGalleryImages.value.split(',').filter(val => val !== image);
+                        deleteGalleryImages.value = updatedGallery.join(','); // Помечаем для удаления
+                    });
+                    galleryImagesPreview.appendChild(deleteGalleryImageBtn);
+
+                    // Сохраняем изображения для удаления
+                    const deleteGalleryImages = document.getElementById('deleteGalleryImages');
+                    deleteGalleryImages.value += `${image},`;
+                });
+            }
+        })
+        .catch(error => console.error('Ошибка загрузки товара:', error));
+}
+
+document.getElementById('editProductForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Останавливаем перезагрузку страницы
+
+    // Получаем данные из формы
+    const id = document.getElementById('editProductId').value;
+    const name = document.getElementById('editName').value;
+    const description = document.getElementById('editDescription').value;
+    const price = parseFloat(document.getElementById('editPrice').value);  // Преобразуем в число
+    const quantity = parseInt(document.getElementById('editQuantity').value);  // Преобразуем в число
+    const discount = parseFloat(document.getElementById('editDiscount').value) || 0;
+    const category = document.getElementById('editCategory').value;
+    const isNew = document.getElementById('editisNew').checked ? 1 : 0;
+    const isBestseller = document.getElementById('editisBestseller').checked ? 1 : 0;
+
+    // Получаем старые изображения из preview
+    const oldMainImage = document.getElementById('mainImagePreview').src;
+    const oldGalleryImages = Array.from(document.querySelectorAll('#galleryImagesPreview img')).map(img => img.src);
+
+    // Создаем объект FormData для загрузки изображений
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('description', description);
+    formData.append('price', price);
+    formData.append('quantity', quantity);
+    formData.append('discount', discount);
+    formData.append('category', category);
+    formData.append('isNew', isNew);
+    formData.append('isBestseller', isBestseller);
+
+    // Добавляем старые изображения
+    formData.append('oldMainImage', oldMainImage);
+    formData.append('oldGalleryImages', oldGalleryImages.join(','));
+
+    // Добавляем новое главное изображение, если оно загружено
+    const mainImage = document.getElementById('editMainImage').files[0];
+    if (mainImage) {
+        formData.append('mainImage', mainImage);
+    }
+
+    // Добавляем новые дополнительные изображения
+    const galleryImages = document.getElementById('editGalleryImages').files;
+    for (let i = 0; i < galleryImages.length; i++) {
+        formData.append('galleryImages', galleryImages[i]);
+    }
+
+    // Отправляем данные на сервер для обновления товара
+    fetch(`/api/editprod/${id}`, {
+        method: 'PUT',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Товар успешно обновлен!');
+            document.getElementById('editModal').style.display = 'none'; // Закрываем модальное окно
+            displayProducts(); // Обновляем список товаров
+        } else {
+            alert(`Ошибка при обновлении товара: ${data.error}`);
+        }
+    })
+    .catch(error => console.error('Ошибка при обновлении товара:', error));
+});
+
+
+// Удаление товара
+function deleteProduct(id) {
+    fetch(`/api/products/${id}`, {
+        method: 'DELETE'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Товар успешно удален');
+            displayProducts(); // Обновляем список товаров
+        } else {
+            alert(`Ошибка при удалении товара: ${data.error}`);
+        }
+    })
+    .catch(error => console.error('Ошибка при удалении товара:', error));
+}
+// Пример для удаления товара
+document.getElementById('product-list').addEventListener('click', function(event) {
+    if (event.target.classList.contains('delete-btn')) {
+        const productId = event.target.getAttribute('data-id');
+        if (confirm('Вы уверены, что хотите удалить этот товар?')) {
+            deleteProduct(productId);
+        }
+    }
+});
+
+
+
+
+
+
+        // Управление промокодами
+        function savePromoCode(code, discount) {
+            const promoData = {
+                code: code,
+                discount: discount
+            };
+
+            fetch('/api/promocodes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(promoData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Промокод добавлен!');
+                displayPromoCodes();
+            })
+            .catch(error => console.error('Ошибка добавления промокода:', error));
+        }
+
+        function displayPromoCodes() {
+    const promoList = document.getElementById('promo-list');
+    fetch('/api/promocodes')  // Исправлено: убран лишний "//3000"
+        .then(response => response.json())
+        .then(promoCodes => {
+            promoList.innerHTML = '';
+            promoCodes.forEach(promo => {
+                const promoDiv = document.createElement('div');
+                promoDiv.classList.add('promo-item');
+                promoDiv.innerHTML = `
+                    <p><strong>${promo.code}</strong>: Скидка ${promo.discount} ₽</p>
+                    <button data-id="${promo.id}" class="delete-promo-btn">Удалить</button>
+                `;
+                promoList.appendChild(promoDiv);
+            });
+
+            document.querySelectorAll('.delete-promo-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    deletePromoCode(id);
+                });
+            });
+        })
+        .catch(error => console.error('Ошибка загрузки промокодов:', error));
+}
+
+
+        function deletePromoCode(id) {
+            if (confirm('Вы уверены, что хотите удалить этот промокод?')) {
+                fetch(`/api/promocodes/${id}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Промокод успешно удален!');
+                    displayPromoCodes();
+                })
+                .catch(error => console.error('Ошибка удаления промокода:', error));
+            }
+        }
+
+   
+
+
+document.getElementById('promoForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Отмена перезагрузки страницы
+
+    const promoCode = document.getElementById('promoCode').value;
+    const discountAmount = document.getElementById('discountAmount').value;
+
+    savePromoCode(promoCode, discountAmount);
+    document.getElementById('promoForm').reset();
+    alert('Промокод добавлен!');
+});
+
+
+        // Отображаем список товаров и промокодов при загрузке
+        document.querySelectorAll('.delete-btn').forEach(button => {
+    button.addEventListener('click', function(event) {
+        event.preventDefault(); // Отмена стандартного поведения кнопки
+        const id = this.getAttribute('data-id');
+        deleteProduct(id);
+    });
+});
+
+document.querySelectorAll('.delete-promo-btn').forEach(button => {
+    button.addEventListener('click', function(event) {
+        event.preventDefault(); // Отмена стандартного поведения кнопки
+        const id = this.getAttribute('data-id');
+        deletePromoCode(id);
+    });
+});
+document.getElementById('logout-btn').addEventListener('click', function() {
+    localStorage.removeItem('isAuthenticated'); // Удаляем информацию о входе
+    location.reload(); // Перезагружаем страницу для отображения формы входа
+});
+
+    </script>
+</body>
+</html>
+<style>
+/* Основной контейнер */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+#admin-panel {
+    display: flex;
+    flex-direction: column;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Заголовки */
+h2 {
+    font-size: 1.5em;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Формы */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+input, select, textarea {
+    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}
+
+input[type="file"] {
+    padding: 0;
+}
+
+button {
+    padding: 10px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* Контейнер списка продуктов */
+#product-list-container {
+    margin-top: 20px;
+}
+
+.product-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #fafafa;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.product-item img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.product-details {
+    flex-grow: 1;
+    margin-left: 20px;
+}
+
+.edit-btn, .delete-btn {
+    background-color: #2196F3;
+    color: white;
+    padding: 5px 10px;
+    margin-left: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.delete-btn {
+    background-color: #f44336;
+}
+
+.edit-btn:hover, .delete-btn:hover {
+    opacity: 0.8;
+}
+
+/* Модальное окно */
+#editModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 500px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal-content .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+#mainImagePreview {
+    margin-top: 10px;
+    border-radius: 4px;
+}
+
+#galleryImagesPreview img {
+    margin-right: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+.badge-new {
+    background-color: #28a745;
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.badge-bestseller {
+    background-color: #ffc107;
+    color: black;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+</style>

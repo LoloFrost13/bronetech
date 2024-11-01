@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Контакты | БронеТек</title>
+    <meta name="description" content="Контакты компании БронеТек: получите профессиональную консультацию и поддержку по всем вопросам. Наш офис расположен в Санкт-Петербурге по адресу Заозёрная улица, 8к2, офис 107. Звоните нам по телефонам +7 (994) 436-56-29 или +7 (900) 304-45-75, пишите на email agrarmor@bk.ru.">
+    <meta name="keywords" content="БронеТек, контакты БронеТек, адрес БронеТек, телефон БронеТек, email БронеТек, поддержка БронеТек, консультации БронеТек, Санкт-Петербург, Заозёрная улица, офис 107, аграрный рынок">
+
+    <link rel="stylesheet" href="styles.css"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> 
+</head>
+<body>
+    <header>
+        <div class="header__container">
+
+            <div class="menu-icon" aria-label="Открыть меню" tabindex="0">
+                <i class="fas fa-bars"></i>
+            </div>
+
+            <a href="index.html" class="header__logo">
+                <img src="/images/logo.png" alt="БронеТек - Военная Экипировка и Снаряжение">
+            </a>
+
+            <div id="cart-icon" class="header__icons" aria-label="Корзина покупок" tabindex="0">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+        </div>
+    </header>
+
+
+    <nav class="menu" aria-label="Основное меню">
+        <ul>
+            <li>
+                <a href="about.html">О компании</a>
+            </li>
+            <li>
+                <a href="contacts.html">Контакты</a>
+            </li>
+            <li>
+                <a href="#" id="catalog-link">Каталог</a>
+            </li>
+        </ul>
+    </nav>
+
+
+    <main>
+        <section class="contact-section">
+            <h1 class="contact-section__title">Свяжитесь с нами</h1>
+            <div class="contact-section__container">
+
+                <div class="contact-section__info">
+                    <h2 class="contact-section__subtitle">Наши контакты</h2>
+                    <address>
+                        <p><i class="fas fa-map-marker-alt"></i> <strong>Адрес:</strong> Санкт-Петербург, Заозёрная улица 8к2, офис 107, парадная 3</p>
+                        <p><i class="fas fa-phone"></i> <strong>Телефоны:</strong> 
+                            <a href="tel:+79944365629">+7 (994) 436-56-29</a>, 
+                            <a href="tel:+79003044575">+7 (900) 304-45-75</a>
+                        </p>
+                        <p><i class="fas fa-envelope"></i> <strong>Email:</strong> 
+                            <a href="mailto:agrarmor@bk.ru">agrarmor@bk.ru</a>
+                        </p>
+                        <p><i class="fas fa-clock"></i> <strong>Время работы:</strong> Пн-Пт 11:00 - 21:00</p>
+                    </address>
+
+                    <div class="contact-section__social-media">
+                        <a href="https://vk.com/bronetech" target="_blank" aria-label="ВКонтакте"><i class="fab fa-vk"></i></a>
+                        <a href="https://t.me/bronetech" target="_blank" aria-label="Телеграм"><i class="fab fa-telegram-plane"></i></a>
+                    </div>
+                </div>
+
+                <div class="contact-section__form-container">
+                    <h2 class="contact-section__subtitle">Напишите нам</h2>
+                    <form class="contact-section__form" id="contact-form">
+                        <div class="form-group">
+                            <label for="contact-name">Имя:</label>
+                            <input type="text" id="contact-name" name="name" placeholder="Ваше имя" required aria-required="true">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contact-phone">Номер телефона:</label>
+                            <input type="tel" id="contact-phone" name="phone" placeholder="Ваш номер телефона" required aria-required="true" pattern="^\+?\d{7,15}$" title="Введите корректный номер телефона">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contact-social">Контакт в Telegram/VK (необязательно):</label>
+                            <input type="text" id="contact-social" name="social" placeholder="Ваш контакт в Telegram или VK">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contact-message">Сообщение:</label>
+                            <textarea id="contact-message" name="message" rows="5" placeholder="Ваше сообщение" required aria-required="true"></textarea>
+                        </div>
+
+                        <button type="submit" class="contact-section__submit-button">Отправить</button>
+                    </form>
+
+                    <div id="form-message" class="form-message" role="alert" aria-live="assertive"></div>
+                </div>
+            </div>
+
+            <div class="contact-section__map-container">
+                <h2 class="contact-section__subtitle">Наше расположение</h2>
+                <iframe src="https://yandex.ru/map-widget/v1/?um=constructor%3A2598166721c28311a40cceeb255fa827807a3c1aae167cc26ded31b6fb4a1a4c&amp;source=constructor" 
+                        width="100%" 
+                        height="450" 
+                        frameborder="0" 
+                        allowfullscreen 
+                        aria-label="Карта местоположения магазина БронеТек"></iframe>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+
+            <div class="footer-logos">
+                <img src="images/logos.svg" alt="Логотипы партнеров БронеТек">
+            </div>
+
+            <div class="footer-contact">
+                <p class="contact-info"><strong>Адрес:</strong><br> Санкт-Петербург, Заозёрная улица,<br> 8к2, офис 107, парадная 3</p>
+                <p class="contact-info">
+                    <strong>Телефоны:</strong><br>
+                    <span class="phone-number">+7 (994) 436-56-29</span>
+                    <span class="phone-number">+7 (900) 304-45-75</span>
+                </p>
+                <p class="contact-info">
+                    <strong>Email:</strong><br>
+                    <a href="mailto:agrarmor@bk.ru">agrarmor@bk.ru</a>
+                </p>
+            </div>
+
+            <div class="footer-social">
+                <a href="https://vk.com/bronetech" target="_blank" aria-label="ВКонтакте"><i class="fab fa-vk"></i></a>
+                <a href="https://t.me/bronetech" target="_blank" aria-label="Телеграм"><i class="fab fa-telegram-plane"></i></a>
+            </div>
+
+            <p class="footer-tagline">Твоя защита — наш приоритет.</p>
+        </div>
+
+        <div class="footer-copyright">
+            © 2024 БронеТек. Все права защищены.
+        </div>
+    </footer>
+<script>document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('contact-form');
+    const formMessage = document.getElementById('form-message');
+
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+
+        const name = document.getElementById('contact-name').value.trim();
+        const phone = document.getElementById('contact-phone').value.trim();
+        const social = document.getElementById('contact-social').value.trim();
+        const message = document.getElementById('contact-message').value.trim();
+
+
+        if (phone === '') {
+            formMessage.textContent = 'Пожалуйста, укажите номер телефона.';
+            formMessage.style.color = 'red';
+            return;
+        }
+
+
+        const phonePattern = /^\+?\d{7,15}$/;
+        if (!phonePattern.test(phone)) {
+            formMessage.textContent = 'Пожалуйста, введите корректный номер телефона.';
+            formMessage.style.color = 'red';
+            return;
+        }
+
+
+        const formData = {
+            name: name,
+            phone: phone,
+            social: social,
+            message: message
+        };
+
+
+        axios.post('/api/contact', formData)
+            .then(function(response) {
+                if (response.data.status === 'success') {
+                    formMessage.textContent = response.data.message;
+                    formMessage.style.color = 'green';
+                    form.reset();
+                } else {
+                    throw new Error(response.data.message);
+                }
+            })
+            .catch(function(error) {
+                console.error('Ошибка:', error);
+                formMessage.textContent = error.response && error.response.data && error.response.data.message
+                    ? error.response.data.message
+                    : 'Произошла ошибка при отправке сообщения. Попробуйте позже.';
+                formMessage.style.color = 'red';
+            });
+    });
+});
+</script>
+        <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+</body>
+</html>
